@@ -5,7 +5,7 @@ import java.util.List;
 public class Epic extends Task {
     protected List<Integer> subtaskIds;
 
-    public Epic(String name, String description, int id, String status) {
-        super(name, description, id, status);
+    public Epic(String name, String description, String status) {
+        super(name, description, status);
     }
 }
