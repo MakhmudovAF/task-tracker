@@ -1,11 +1,9 @@
 package model;
 
 import enums.TaskStatus;
-
-import java.util.Objects;
+import enums.TaskType;
 
 public class Task {
-
     protected int id;
     protected String name;
     protected String description;
@@ -17,11 +15,15 @@ public class Task {
         this.status = status;
     }
 
+    public TaskType getType() {
+        return TaskType.TASK;
+    }
+
     public int getId() {
         return id;
     }
 
-    public void setId(int id) { // устанавливается менеджером
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -34,25 +36,11 @@ public class Task {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Task)) return false;
-        Task task = (Task) o;
-        return id == task.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
     public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
+        return id + "," +
+                getType() + "," +
+                name + "," +
+                status + "," +
+                description + ",";
     }
 }

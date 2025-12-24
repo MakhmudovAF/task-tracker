@@ -21,9 +21,13 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    private final Map<Integer, Node> nodes = new HashMap<>();
+    private final Map<Integer, Node> nodes;
     private Node head;
     private Node tail;
+
+    public InMemoryHistoryManager() {
+        this.nodes = new HashMap<>();
+    }
 
     @Override
     public void add(Task task) {
