@@ -1,4 +1,5 @@
 import enums.Status;
+import manager.InMemoryTaskManager;
 import manager.TaskManager;
 import model.Epic;
 import model.Subtask;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager manager = new TaskManager();
+        TaskManager manager = new InMemoryTaskManager();
 
         Task task1 = manager.createTask(new Task(
                 "Переезд",
