@@ -99,6 +99,83 @@ public class TaskManager {
         return removed;
     }
 
+    // ---------------- SUBTASK ----------------
+    public List<Subtask> getAllSubtasks() {
+        return new ArrayList<>(subtasks.values());
+    }
+
+    public void deleteAllSubtasks() {
+        subtasks.clear();
+        for (Epic epic : epics.values()) {
+            epic.clearSubtaskIds();
+            epic.setStatus(Status.NEW);
+        }
+    }
+
+    public Subtask getSubtaskById(int id) {
+        return subtasks.get(id);
+    }
+
+    public Subtask createSubtask(Subtask subtask) {
+        Epic epic = epics.get(subtask.getEpicId());
+        if (epic == null) {
+            return null;
+        }
+
+        int id = generateId();
+        subtask.setId(id);
+        subtasks.put(id, subtask);
+
+        epic.addSubtaskId(id);
+        updateEpicStatus(epic.getId());
+        return subtask;
+    }
+
+    public Subtask updateSubtask(Subtask subtask) {
+        if (!subtasks.containsKey(subtask.getId())) {
+            return null;
+        }
+
+        Subtask old = subtasks.get(subtask.getId());
+        if (old.getEpicId() != subtask.getEpicId()) {
+            return null;
+        }
+
+        subtasks.put(subtask.getId(), subtask);
+        updateEpicStatus(subtask.getEpicId());
+        return subtask;
+    }
+
+    public Subtask deleteSubtaskById(int id) {
+        Subtask removed = subtasks.remove(id);
+        if (removed == null) {
+            return null;
+        }
+
+        Epic epic = epics.get(removed.getEpicId());
+        if (epic != null) {
+            epic.removeSubtaskId(id);
+            updateEpicStatus(epic.getId());
+        }
+        return removed;
+    }
+
+    // ---------------- EXTRA: subtasks of epic ----------------
+    public List<Subtask> getSubtasksOfEpic(int epicId) {
+        Epic epic = epics.get(epicId);
+        if (epic == null) {
+            return new ArrayList<>();
+        }
+        List<Subtask> result = new ArrayList<>();
+        for (Integer subId : epic.getSubtaskIds()) {
+            Subtask st = subtasks.get(subId);
+            if (st != null) {
+                result.add(st);
+            }
+        }
+        return result;
+    }
+
     // ---------------- STATUS CALC ----------------
     private void updateEpicStatus(int epicId) {
         Epic epic = epics.get(epicId);
