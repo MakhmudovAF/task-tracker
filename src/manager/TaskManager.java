@@ -48,4 +48,6 @@ public interface TaskManager {
 
     // ---------------- EXTRA: subtasks of epic ----------------
     List<Subtask> getSubtasksOfEpic(int epicId);
+
+    List<Task> getHistory();
 }

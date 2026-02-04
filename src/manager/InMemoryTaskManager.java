@@ -195,6 +195,11 @@ public class InMemoryTaskManager implements TaskManager {
         return result;
     }
 
+    @Override
+    public List<Task> getHistory() {
+        return List.of();
+    }
+
     // ---------------- STATUS CALC ----------------
     private void updateEpicStatus(int epicId) {
         Epic epic = epics.get(epicId);
