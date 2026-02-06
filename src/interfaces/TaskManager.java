@@ -7,7 +7,7 @@ import model.Task;
 import java.util.List;
 
 public interface TaskManager {
-    // ---------------- TASK ----------------
+    // ---------- TASK ----------
     List<Task> getAllTasks();
 
     void deleteAllTasks();
@@ -20,7 +20,7 @@ public interface TaskManager {
 
     Task deleteTaskById(int id);
 
-    // ---------------- EPIC ----------------
+    // ---------- EPIC ----------
     List<Epic> getAllEpics();
 
     void deleteAllEpics();
@@ -33,7 +33,7 @@ public interface TaskManager {
 
     Epic deleteEpicById(int id);
 
-    // ---------------- SUBTASK ----------------
+    // ---------- SUBTASK ----------
     List<Subtask> getAllSubtasks();
 
     void deleteAllSubtasks();
@@ -46,8 +46,9 @@ public interface TaskManager {
 
     Subtask deleteSubtaskById(int id);
 
-    // ---------------- EXTRA: subtasks of epic ----------------
+    // ---------- EXTRA ----------
     List<Subtask> getSubtasksOfEpic(int epicId);
 
+    // ---------- HISTORY ----------
     List<Task> getHistory();
 }

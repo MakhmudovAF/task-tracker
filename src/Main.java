@@ -9,24 +9,24 @@ public class Main {
     public static void main(String[] args) {
         TaskManager manager = Managers.getDefault();
 
-        Task t1 = manager.createTask(new Task("Переезд", "Собрать вещи", Status.NEW));
-        Epic e1 = manager.createEpic(new Epic("Праздник", "Сделать всё"));
-        Subtask s1 = manager.createSubtask(new Subtask("Торт", "Заказать торт", Status.NEW, e1.getId()));
+        Task task = manager.createTask(new Task("Переезд", "Собрать вещи", Status.NEW));
+        Epic epic = manager.createEpic(new Epic("Праздник", "Сделать всё"));
+        Subtask subtask = manager.createSubtask(
+                new Subtask("Торт", "Заказать торт", Status.NEW, epic.getId())
+        );
 
-        System.out.println(manager.getTaskById(t1.getId()));
-        System.out.println(manager.getEpicById(e1.getId()));
-        System.out.println(manager.getSubtaskById(s1.getId()));
-        System.out.println(manager.getTaskById(t1.getId()));
-        System.out.println(manager.getEpicById(e1.getId()));
-        System.out.println(manager.getSubtaskById(s1.getId()));
-        System.out.println(manager.getTaskById(t1.getId()));
-        System.out.println(manager.getEpicById(e1.getId()));
-        System.out.println(manager.getSubtaskById(s1.getId()));
-        System.out.println(manager.getTaskById(t1.getId()));
-        System.out.println(manager.getEpicById(e1.getId()));
-        System.out.println(manager.getSubtaskById(s1.getId()));
+        for (int i = 0; i < 4; i++) {
+            manager.getTaskById(task.getId());
+            manager.getEpicById(epic.getId());
+            manager.getSubtaskById(subtask.getId());
 
+            printHistory(manager);
+        }
+    }
+
+    private static void printHistory(TaskManager manager) {
         System.out.println("History:");
         System.out.println(manager.getHistory());
+        System.out.println();
     }
 }

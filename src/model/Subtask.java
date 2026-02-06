@@ -1,6 +1,7 @@
 package model;
 
 import enums.Status;
+import enums.Type;
 
 public class Subtask extends Task {
     private final int epicId;
@@ -15,18 +16,23 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
+    @Override
+    public Type getType() {
+        return Type.SUBTASK;
+    }
+
     public int getEpicId() {
         return epicId;
     }
 
+    // CSV: id,type,name,status,description,epicId
     @Override
     public String toString() {
-        return "Subtask{" +
-                "id=" + id +
-                ", epicId=" + epicId +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
+        return id + "," +
+                getType() + "," +
+                name + "," +
+                status + "," +
+                description + "," +
+                epicId;
     }
 }
