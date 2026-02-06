@@ -1,6 +1,6 @@
 import enums.Status;
 import manager.Managers;
-import manager.TaskManager;
+import interfaces.TaskManager;
 import model.Task;
 import org.junit.jupiter.api.Test;
 

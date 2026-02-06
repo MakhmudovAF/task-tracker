@@ -1,5 +1,8 @@
 package manager;
 
+import interfaces.HistoryManager;
+import interfaces.TaskManager;
+
 public final class Managers {
     private Managers() {}
 

@@ -1,6 +1,8 @@
 package manager;
 
 import enums.Status;
+import interfaces.HistoryManager;
+import interfaces.TaskManager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -35,6 +37,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
+        for (Integer id : tasks.keySet()) {
+            historyManager.remove(id);
+        }
         tasks.clear();
     }
 
@@ -64,6 +69,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task deleteTaskById(int id) {
+        historyManager.remove(id);
+
         return tasks.remove(id);
     }
 
@@ -75,6 +82,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllEpics() {
+        for (Integer id : subtasks.keySet()) {
+            historyManager.remove(id);
+        }
+        for (Integer id : epics.keySet()) {
+            historyManager.remove(id);
+        }
+
         subtasks.clear();
         epics.clear();
     }
@@ -117,7 +131,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
         for (Integer subId : removed.getSubtaskIds()) {
             subtasks.remove(subId);
+            historyManager.remove(subId);
         }
+
+        historyManager.remove(id);
+
         return removed;
     }
 
@@ -129,6 +147,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllSubtasks() {
+        for (Integer id : subtasks.keySet()) {
+            historyManager.remove(id);
+        }
         subtasks.clear();
         for (Epic epic : epics.values()) {
             epic.clearSubtaskIds();
@@ -187,6 +208,9 @@ public class InMemoryTaskManager implements TaskManager {
             epic.removeSubtaskId(id);
             updateEpicStatus(epic.getId());
         }
+
+        historyManager.remove(id);
+
         return removed;
     }
 
