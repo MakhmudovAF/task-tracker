@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,5 +102,68 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(path);
 
         assertTrue(loaded.getHistory().isEmpty(), "Если ничего не просматривали — история пустая");
+    }
+
+    @Test
+    void loadFromFile_shouldRestoreDurationAndStartTime_forTaskAndSubtask() {
+        Path path = file();
+        FileBackedTaskManager manager = new FileBackedTaskManager(path);
+
+        Task task = new Task("T", "D", Status.NEW);
+        task.setDuration(45);
+        task.setStartTime(LocalDateTime.of(2025, 2, 1, 10, 0));
+        task = manager.createTask(task);
+
+        Epic epic = manager.createEpic(new Epic("E", "D"));
+
+        Subtask sub = new Subtask("S", "D", Status.IN_PROGRESS, epic.getId());
+        sub.setDuration(30);
+        sub.setStartTime(LocalDateTime.of(2025, 2, 1, 12, 0));
+        sub = manager.createSubtask(sub);
+
+        // Просмотры, чтобы сохранилась история (опционально)
+        manager.getTaskById(task.getId());
+        manager.getSubtaskById(sub.getId());
+
+        FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(path);
+
+        Task loadedTask = loaded.getTaskById(task.getId());
+        assertNotNull(loadedTask);
+        assertEquals(45, loadedTask.getDuration());
+        assertEquals(LocalDateTime.of(2025, 2, 1, 10, 0), loadedTask.getStartTime());
+        assertEquals(LocalDateTime.of(2025, 2, 1, 10, 45), loadedTask.getEndTime());
+
+        Subtask loadedSub = loaded.getSubtaskById(sub.getId());
+        assertNotNull(loadedSub);
+        assertEquals(30, loadedSub.getDuration());
+        assertEquals(LocalDateTime.of(2025, 2, 1, 12, 0), loadedSub.getStartTime());
+        assertEquals(LocalDateTime.of(2025, 2, 1, 12, 30), loadedSub.getEndTime());
+    }
+
+    @Test
+    void loadFromFile_shouldRestoreEpicCalculatedFields_fromSubtasks() {
+        Path path = file();
+        FileBackedTaskManager manager = new FileBackedTaskManager(path);
+
+        Epic epic = manager.createEpic(new Epic("E", "D"));
+
+        Subtask s1 = new Subtask("S1", "D", Status.NEW, epic.getId());
+        s1.setStartTime(LocalDateTime.of(2025, 3, 1, 9, 0));
+        s1.setDuration(60);
+        manager.createSubtask(s1);
+
+        Subtask s2 = new Subtask("S2", "D", Status.NEW, epic.getId());
+        s2.setStartTime(LocalDateTime.of(2025, 3, 1, 11, 0));
+        s2.setDuration(15);
+        manager.createSubtask(s2);
+
+        FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(path);
+
+        Epic loadedEpic = loaded.getEpicById(epic.getId());
+        assertNotNull(loadedEpic);
+
+        assertEquals(75, loadedEpic.getDuration());
+        assertEquals(LocalDateTime.of(2025, 3, 1, 9, 0), loadedEpic.getStartTime());
+        assertEquals(LocalDateTime.of(2025, 3, 1, 11, 15), loadedEpic.getEndTime());
     }
 }
