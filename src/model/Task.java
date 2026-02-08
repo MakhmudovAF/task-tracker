@@ -3,6 +3,8 @@ package model;
 import enums.Status;
 import enums.Type;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -11,17 +13,30 @@ public class Task {
     protected String description;
     protected Status status;
 
+    protected long duration;
+    protected LocalDateTime startTime;
+
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
-    public Task(int id, String name, String description, Status status) {
+    public Task(String name, String description, Status status, long duration, LocalDateTime startTime) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
+
+    public Task(int id, String name, String description, Status status, long duration, LocalDateTime startTime) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public int getId() {
@@ -60,6 +75,29 @@ public class Task {
         this.status = status;
     }
 
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime == null) {
+            return null;
+        }
+        return startTime.plusMinutes(duration);
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
@@ -79,6 +117,10 @@ public class Task {
                 getType() + "," +
                 name + "," +
                 status + "," +
-                description + ",";
+                description + "," +
+                "" + "," +
+                duration + "," +
+                (startTime == null ? "" : startTime) + "," +
+                (getEndTime() == null ? "" : getEndTime());
     }
 }

@@ -3,6 +3,9 @@ package model;
 import enums.Status;
 import enums.Type;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
     private final int epicId;
 
@@ -11,8 +14,13 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
-    public Subtask(int id, String name, String description, Status status, int epicId) {
-        super(id, name, description, status);
+    public Subtask(String name, String description, Status status, int epicId, long duration, LocalDateTime startTime) {
+        super(name, description, status, duration, startTime);
+        this.epicId = epicId;
+    }
+
+    public Subtask(int id, String name, String description, Status status, int epicId, long duration, LocalDateTime startTime) {
+        super(id, name, description, status, duration, startTime);
         this.epicId = epicId;
     }
 
@@ -25,7 +33,6 @@ public class Subtask extends Task {
         return epicId;
     }
 
-    // CSV: id,type,name,status,description,epicId
     @Override
     public String toString() {
         return id + "," +
@@ -33,6 +40,9 @@ public class Subtask extends Task {
                 name + "," +
                 status + "," +
                 description + "," +
-                epicId;
+                epicId + "," +
+                duration + "," +
+                (startTime == null ? "" : startTime) + "," +
+                (getEndTime() == null ? "" : getEndTime());
     }
 }

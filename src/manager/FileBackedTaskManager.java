@@ -10,11 +10,13 @@ import model.Task;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private static final String HEADER = "id,type,name,status,description,epic";
+    private static final String HEADER = "id,type,name,status,description,epic,duration,startTime,endTime";
     private final Path path;
 
     public FileBackedTaskManager(Path path) {
@@ -222,6 +224,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
                 epic.addSubtaskId(sub.getId());
                 updateEpicStatus(epic.getId());
+                calculateEpicEndTime(epic.getId());
                 break;
 
             default:
@@ -238,10 +241,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Status status = Status.valueOf(parts[3]);
         String description = parts[4];
 
+        long duration = Integer.parseInt(parts[6]);
+        LocalDateTime startTime = parts[7].isBlank() ? null : LocalDateTime.parse(parts[7]);
+
         Task task;
         switch (type) {
             case TASK:
-                task = new Task(name, description, status);
+                task = new Task(name, description, status, duration, startTime);
                 break;
 
             case EPIC:
@@ -251,7 +257,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
             case SUBTASK:
                 int epic = Integer.parseInt(parts[5]);
-                task = new Subtask(name, description, status, epic);
+                task = new Subtask(name, description, status, epic, duration, startTime);
                 break;
 
             default:
@@ -285,26 +291,39 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
 
-        Task t1 = manager.createTask(new Task("Task1", "Desc1", Status.NEW));
-        Epic e1 = manager.createEpic(new Epic("Epic1", "Epic desc"));
-        Subtask s1 = manager.createSubtask(new Subtask("Sub1", "Sub desc", Status.IN_PROGRESS, e1.getId()));
+        Task task1 = manager.createTask(
+                new Task("Переезд", "Собрать вещи", Status.NEW)
+        );
 
-        manager.getTaskById(t1.getId());
-        manager.getEpicById(e1.getId());
-        manager.getSubtaskById(s1.getId());
+        Epic epic1 = manager.createEpic(
+                new Epic("Праздник", "Организовать праздник")
+        );
 
-        FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(file);
+        Subtask sub1 = manager.createSubtask(
+                new Subtask("Торт", "Заказать торт", Status.NEW, epic1.getId(), 15, LocalDateTime.of(2026, 2, 8, 19, 21))
+        );
 
-        System.out.println("=== LOADED TASKS ===");
-        System.out.println(loaded.getAllTasks());
+        Subtask sub2 = manager.createSubtask(
+                new Subtask("Гости", "Составить список гостей", Status.DONE, epic1.getId(), 30, LocalDateTime.of(2026, 2, 9, 19, 21))
+        );
 
-        System.out.println("\n=== LOADED EPICS ===");
-        System.out.println(loaded.getAllEpics());
+        manager.getTaskById(task1.getId());
+        manager.getEpicById(epic1.getId());
+        manager.getSubtaskById(sub1.getId());
+        manager.getSubtaskById(sub2.getId());
 
-        System.out.println("\n=== LOADED SUBTASKS ===");
-        System.out.println(loaded.getAllSubtasks());
+        System.out.println("=== ORIGINAL MANAGER ===");
+        System.out.println("Tasks: " + manager.getAllTasks());
+        System.out.println("Epics: " + manager.getAllEpics());
+        System.out.println("Subtasks: " + manager.getAllSubtasks());
+        System.out.println("History: " + manager.getHistory());
 
-        System.out.println("\n=== LOADED HISTORY ===");
-        System.out.println(loaded.getHistory());
+        FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
+
+        System.out.println("\n=== LOADED MANAGER ===");
+        System.out.println("Tasks: " + loadedManager.getAllTasks());
+        System.out.println("Epics: " + loadedManager.getAllEpics());
+        System.out.println("Subtasks: " + loadedManager.getAllSubtasks());
+        System.out.println("History: " + loadedManager.getHistory());
     }
 }
